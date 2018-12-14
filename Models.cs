@@ -24,8 +24,8 @@ public partial class FabsSession
         [JsonProperty("sessionCountry")]
         public string SessionCountry { get; set; }
 
-        [JsonProperty("sessionReveiw")]
-        public SessionReveiw[] SessionReveiw { get; set; }
+        [JsonProperty("sessionReview")]
+        public SessionReveiw[] SessionReview { get; set; }
     }
 
     public partial class SessionReveiw
@@ -69,6 +69,6 @@ public partial class FabsSession
         [JsonProperty("sessionCountry")]
         public string SessionCountry { get; set; }
 
-        [JsonProperty("sessionReveiw")]
-        public SessionReveiw[] SessionReveiw { get; set; }
+        [JsonProperty("sessionReview")]
+        public SessionReveiw[] SessionReview { get; set; }
     }

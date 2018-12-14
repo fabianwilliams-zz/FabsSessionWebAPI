@@ -23,8 +23,6 @@ namespace fabsesrev
         {
             log.LogInformation("Creating a new Session that Fabian will or have give");
 
-            string name = req.Query["name"];
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic input = JsonConvert.DeserializeObject<CreateSession>(requestBody);
             
@@ -39,7 +37,7 @@ namespace fabsesrev
             };
             fs.Add(sesrev);
 
-            return name != null
+            return sesrev != null
                 ? (ActionResult)new OkObjectResult(sesrev)
                 : new BadRequestObjectResult("Please pass a valid Session JSON Payload in the request body");
         }
