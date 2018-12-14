@@ -50,7 +50,7 @@ namespace fabsesrev
             return new OkObjectResult(fs);
         }
 
-        [FunctionName("GetTodoById")]
+        [FunctionName("GetSessionById")]
         public static IActionResult GetTodoById(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "sesrev/{id}")]HttpRequest req, 
             ILogger log, string id)
@@ -65,25 +65,27 @@ namespace fabsesrev
 
         [FunctionName("UpdateSession")]
         public static async Task<IActionResult> UpdateSession(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "todo/{id}")]HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "sesrev/{id}")]HttpRequest req,
             ILogger log, string id)
         {
-            var todo = fs.FirstOrDefault(t => t.Id == id);
-            if (todo == null)
+            var sesrev = fs.FirstOrDefault(s => s.Id == id);
+            if (sesrev == null)
             {
                 return new NotFoundResult();
             }
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var updated = JsonConvert.DeserializeObject<CreateSession>(requestBody);
-            /* 
-            todo.IsCompleted = updated.IsCompleted;
-            if (!string.IsNullOrEmpty(updated.TaskDescription))
+            var updated = JsonConvert.DeserializeObject<FabsSession>(requestBody);
+
             {
-                todo.TaskDescription = updated.TaskDescription;
+                sesrev.SessionNumber = updated.SessionNumber;
+                sesrev.SessionName = updated.SessionName;
+                sesrev.SessionDate = updated.SessionDate;
+                sesrev.SessionCity = updated.SessionCity;
+                sesrev.SessionRegionState = updated.SessionRegionState;
+                sesrev.SessionCountry = updated.SessionCountry;
             }
-            */
-            return new OkObjectResult(todo);
+            return new OkObjectResult(sesrev);
         }
 
         [FunctionName("DeleteSession")]
