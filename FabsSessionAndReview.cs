@@ -9,12 +9,14 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace fabsesrev
 {
     public static class FabsSessionAndReview
     {
         static List<FabsSession> fs = new List<FabsSession>();
+        static List<SessionReview> sr = new List<SessionReview>();
 
         [FunctionName("CreateSession")]
         public static async Task<IActionResult> CreateSession(
@@ -28,12 +30,12 @@ namespace fabsesrev
             
             var sesrev = new FabsSession()
             {
-                SessionNumber = input.SessionNumber,
                 SessionName = input.SessionName,
                 SessionDate = input.SessionDate,
                 SessionCity = input.SessionCity,
                 SessionRegionState = input.SessionRegionState,
-                SessionCountry = input.SessionCountry
+                SessionCountry = input.SessionCountry,
+                SessionReview = input.SessionReview
             };
             fs.Add(sesrev);
 
@@ -75,7 +77,7 @@ namespace fabsesrev
             }
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var updated = JsonConvert.DeserializeObject<FabsSession>(requestBody);
+            dynamic updated = JsonConvert.DeserializeObject<FabsSession>(requestBody);
 
             {
                 sesrev.SessionNumber = updated.SessionNumber;
@@ -84,9 +86,61 @@ namespace fabsesrev
                 sesrev.SessionCity = updated.SessionCity;
                 sesrev.SessionRegionState = updated.SessionRegionState;
                 sesrev.SessionCountry = updated.SessionCountry;
+                sesrev.SessionReview = updated.SessionReview;
             }
             return new OkObjectResult(sesrev);
         }
+        [FunctionName("CreateReview")]
+        public static async Task<IActionResult> CreateReview(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "createreview/{id}")]HttpRequest req,
+            ILogger log, string id)
+        {
+            var sesrev = fs.FirstOrDefault(s => s.Id == id);
+            if (sesrev == null)
+            {
+                return new NotFoundResult();
+            }
+
+            SessionReview[] mysr = sesrev.SessionReview;
+            int length = mysr.Length;
+            int newIndex;
+
+            if (length == 0 || mysr == null)
+            {
+                newIndex = 0;
+            }
+            else
+            {
+                length = mysr.Length;
+                newIndex = length - 1;
+                //newIndex = length + 1;
+            }
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var updated = JsonConvert.DeserializeObject<SessionReview>(requestBody);
+
+            {
+                sesrev.SessionReview[newIndex].Id = updated.Id;
+                sesrev.SessionReview[newIndex].Name = updated.Name;
+                sesrev.SessionReview[newIndex].ZerotofiveRating = updated.ZerotofiveRating;
+                sesrev.SessionReview[newIndex].Feedback = updated.Feedback;
+                sesrev.SessionReview[newIndex].RequestContact = updated.RequestContact;
+                sesrev.SessionReview[newIndex].Email = updated.Email;
+            }
+
+            var blankReview = new SessionReview()
+            {
+                Name = "",
+                ZerotofiveRating = 0,
+                Feedback = "",
+                RequestContact = false,
+                Email = ""
+            };
+            sr.Add(blankReview);
+
+            return new OkObjectResult(sesrev);
+        }
+
 
         [FunctionName("DeleteSession")]
         public static IActionResult DeleteSession(

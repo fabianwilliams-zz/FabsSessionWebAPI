@@ -25,13 +25,13 @@ public partial class FabsSession
         public string SessionCountry { get; set; }
 
         [JsonProperty("sessionReview")]
-        public SessionReveiw[] SessionReview { get; set; }
+        public SessionReview[] SessionReview { get; set; }
     }
 
-    public partial class SessionReveiw
+    public partial class SessionReview
     {
         [JsonProperty("id")]
-        public string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString("n");
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -70,5 +70,5 @@ public partial class FabsSession
         public string SessionCountry { get; set; }
 
         [JsonProperty("sessionReview")]
-        public SessionReveiw[] SessionReview { get; set; }
+        public SessionReview[] SessionReview { get; set; }
     }
